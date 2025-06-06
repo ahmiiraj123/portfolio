@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Index (Loader)</title>
+  <title></title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Poppins -->
   <link
@@ -100,42 +100,44 @@
   <!-- Full-screen iframe; we’ll set its `src` dynamically -->
   <iframe id="content-frame" src=""></iframe>
 
-  <script>
-    (function() {
-      // 1) Replace this with your actual Apps Script "exec" URL:
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrg8UfKUE_Wh6IE9vjEv0ACF9DHHp2cuNLbn-njgFs8TDXzAE4yj3GtREREuFlTwYcmg/exec';
+<script>
+(function() {
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrg8UfKUE_Wh6IE9vjEv0ACF9DHHp2cuNLbn-njgFs8TDXzAE4yj3GtREREuFlTwYcmg/exec';
 
-      // 2) Ask backend if maintenance is on/off
-      fetch(SCRIPT_URL + '?type=maintenance')
-        .then(res => {
-          if (!res.ok) throw new Error('Network response was not ok');
-          return res.json();
-        })
-        .then(data => {
-          // data = { maintenance: "yes" } or { maintenance: "no" }
-          const shouldShowMaint = (data.maintenance === 'yes');
+  fetch(SCRIPT_URL + '?type=maintenance')
+    .then(res => {
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.json();
+    })
+    .then(data => {
+      const shouldShowMaint = (data.maintenance === 'yes');
+      const pageToLoad = shouldShowMaint ? 'maintenance.html' : 'portfolio.html';
 
-          // 3) Decide which page to load in the iframe
-          const pageToLoad = shouldShowMaint
-            ? 'maintenance.html'
-            : 'portfolio.html';
+      const iframe = document.getElementById('content-frame');
+      iframe.src = pageToLoad;
 
-          // 4) Set iframe.src
-          const iframe = document.getElementById('content-frame');
-          iframe.src = pageToLoad;
+      iframe.onload = () => {
+        document.getElementById('loader').style.display = 'none';
+        iframe.style.display = 'block';
 
-          // 5) Once iframe content finishes loading, hide loader and show iframe
-          iframe.onload = () => {
-            document.getElementById('loader').style.display = 'none';
-            iframe.style.display = 'block';
-          };
-        })
-        .catch(err => {
-          console.error(err);
-          const loader = document.getElementById('loader');
-          loader.innerHTML = '<h2>Oops!</h2><p>Something went wrong. Please try again.</p>';
-        });
-    })();
-  </script>
+        // Dynamically set parent page title based on iframe content
+        try {
+          const iframeTitle = iframe.contentDocument.title;
+          if (iframeTitle) {
+            document.title = iframeTitle;
+          }
+        } catch (e) {
+          console.warn("Unable to access iframe title due to cross-origin policy.");
+        }
+      };
+    })
+    .catch(err => {
+      console.error(err);
+      const loader = document.getElementById('loader');
+      loader.innerHTML = '<h2>Oops!</h2><p>Something went wrong. Please try again.</p>';
+    });
+})();
+</script>
+
 </body>
 </html>
