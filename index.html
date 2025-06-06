@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Status Checking</title></title>
+  <title>Loading…</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgL_HcBB4-RZpML1-SCeB-jX025r8IaNCajVraijTBjsNY1voUawtfLwC80v-V3ScOwYpy0vSjtSArCg4IqasYTCRS5yTYG839kxOKZBoWLfCOsFItRdii0OpJcQlqRm2P_ftsIAzUsgY4Y8gEmYA_D9q1DcWRbX6gan0pxulHVkqEdYQSTmVVvmAyMtmk/s4032/WhatsApp%20Image%202025-01-22%20at%2012.07.13%20AM.jpeg" />
+  <!-- Or use .ico format -->
+  <!-- <link rel="icon" type="image/x-icon" href="favicon.ico" /> -->
+
   <!-- Google Font: Poppins -->
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+
   <style>
     html, body {
       margin: 0;
@@ -116,13 +123,12 @@
             document.getElementById('loader').style.display = 'none';
             iframe.style.display = 'block';
 
-            // Dynamically set title from iframe's content
+            // Try to set title from iframe
             try {
               const iframeTitle = iframe.contentDocument?.title;
               if (iframeTitle) {
                 document.title = iframeTitle;
               } else {
-                // Fallback title if iframe doesn't have one
                 document.title = shouldShowMaint ? 'Maintenance Mode' : 'Portfolio';
               }
             } catch (e) {
