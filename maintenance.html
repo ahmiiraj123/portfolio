@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Site Under Maintenance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap 5 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6LD/0YhEQvYlF6Z9ENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"
+  />
+
+  <!-- Google Font: Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ────── Global Reset & Body Styles ────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6c63ff, #a18cd1);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ────── Container “Glass” Card ────── */
+    .maintenance-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      max-width: 380px;
+      width: 90%;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: #FFFFFF;
+      z-index: 1;
+    }
+
+    /* ────── Floating Circles in Background ────── */
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+    }
+    .circle-1 {
+      width: 200px;
+      height: 200px;
+      top: -50px;
+      left: -50px;
+      animation-delay: 0s;
+    }
+    .circle-2 {
+      width: 150px;
+      height: 150px;
+      bottom: -40px;
+      right: -30px;
+      animation-delay: 2s;
+    }
+    .circle-3 {
+      width: 120px;
+      height: 120px;
+      top: 50%;
+      right: -60px;
+      animation-delay: 4s;
+    }
+    @keyframes float {
+      0%   { transform: translateY(0) scale(1); }
+      50%  { transform: translateY(-20px) scale(1.05); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    /* ────── Animated Gear Icon (inline SVG) ────── */
+    .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      position: relative;
+      animation: spin 4s linear infinite;
+    }
+    .icon-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/></svg>') center/contain no-repeat;
+      transform: translate(-50%, -50%);
+    }
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ────── Headings & Text ────── */
+    .maintenance-card h1 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .maintenance-card p {
+      font-weight: 400;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    /* ────── Dot‐Bounce Loading Animation ────── */
+    .dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: bounce 1s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay: 0s;   }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+      40%           { transform: translateY(-12px); opacity: 1; }
+    }
+
+    /* ────── “Contact Us” Button ────── */
+    .btn-contact {
+      background-color: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50px;
+      color: #FFFFFF;
+      font-weight: 500;
+      padding: 0.5rem 1.5rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .btn-contact:hover {
+      background-color: #FFFFFF;
+      color: #6c63ff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Circles -->
+  <div class="bg-circle circle-1"></div>
+  <div class="bg-circle circle-2"></div>
+  <div class="bg-circle circle-3"></div>
+
+  <!-- Main Glass Card -->
+  <div class="maintenance-card">
+    <!-- Animated Gear Icon (inline SVG) -->
+    <div class="icon-wrapper"></div>
+
+    <!-- Heading & Subheading -->
+    <h1>We'll Be Back Soon</h1>
+    <p>Our site is undergoing scheduled maintenance.</p>
+
+    <!-- Dots animation to indicate “working” -->
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- Contact Support Button -->
+    <a href="mailto:hello@yourdomain.com" class="btn btn-contact">
+      Contact Support
+    </a>
+  </div>
+</body>
+</html>
