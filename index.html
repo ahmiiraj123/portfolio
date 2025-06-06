@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title></title>
+  <title>Loading…</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Poppins -->
   <link
@@ -10,7 +10,6 @@
     rel="stylesheet"
   />
   <style>
-    /* ─── Full-viewport Reset ─── */
     html, body {
       margin: 0;
       padding: 0;
@@ -24,7 +23,6 @@
       justify-content: center;
     }
 
-    /* ─── Loader Container ─── */
     #loader {
       text-align: center;
       color: #ffffff;
@@ -36,7 +34,6 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
 
-    /* ─── Animated Spinner (Three Dots) ─── */
     .dots {
       display: flex;
       justify-content: center;
@@ -44,6 +41,7 @@
       gap: 6px;
       margin-bottom: 1rem;
     }
+
     .dot {
       width: 14px;
       height: 14px;
@@ -52,7 +50,8 @@
       opacity: 0.3;
       animation: bounce 1s infinite ease-in-out both;
     }
-    .dot:nth-child(1) { animation-delay: 0s;   }
+
+    .dot:nth-child(1) { animation-delay: 0s; }
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
 
@@ -61,19 +60,18 @@
       40%           { transform: translateY(-12px); opacity: 1; }
     }
 
-    /* ─── Status Text ─── */
     #loader h2 {
       font-size: 1.25rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
+
     #loader p {
       font-size: 0.9rem;
       opacity: 0.85;
       margin: 0;
     }
 
-    /* ─── Iframe container (hidden until loaded) ─── */
     #content-frame {
       display: none;
       border: none;
@@ -86,7 +84,6 @@
   </style>
 </head>
 <body>
-  <!-- Loader: Spinner + Text -->
   <div id="loader">
     <div class="dots">
       <div class="dot"></div>
@@ -97,47 +94,50 @@
     <p>Please wait a moment</p>
   </div>
 
-  <!-- Full-screen iframe; we’ll set its `src` dynamically -->
   <iframe id="content-frame" src=""></iframe>
 
-<script>
-(function() {
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrg8UfKUE_Wh6IE9vjEv0ACF9DHHp2cuNLbn-njgFs8TDXzAE4yj3GtREREuFlTwYcmg/exec';
+  <script>
+    (function() {
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrg8UfKUE_Wh6IE9vjEv0ACF9DHHp2cuNLbn-njgFs8TDXzAE4yj3GtREREuFlTwYcmg/exec';
 
-  fetch(SCRIPT_URL + '?type=maintenance')
-    .then(res => {
-      if (!res.ok) throw new Error('Network response was not ok');
-      return res.json();
-    })
-    .then(data => {
-      const shouldShowMaint = (data.maintenance === 'yes');
-      const pageToLoad = shouldShowMaint ? 'maintenance.html' : 'portfolio.html';
+      fetch(SCRIPT_URL + '?type=maintenance')
+        .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
+        .then(data => {
+          const shouldShowMaint = (data.maintenance === 'yes');
+          const pageToLoad = shouldShowMaint ? 'maintenance.html' : 'portfolio.html';
 
-      const iframe = document.getElementById('content-frame');
-      iframe.src = pageToLoad;
+          const iframe = document.getElementById('content-frame');
+          iframe.src = pageToLoad;
 
-      iframe.onload = () => {
-        document.getElementById('loader').style.display = 'none';
-        iframe.style.display = 'block';
+          iframe.onload = () => {
+            document.getElementById('loader').style.display = 'none';
+            iframe.style.display = 'block';
 
-        // Dynamically set parent page title based on iframe content
-        try {
-          const iframeTitle = iframe.contentDocument.title;
-          if (iframeTitle) {
-            document.title = iframeTitle;
-          }
-        } catch (e) {
-          console.warn("Unable to access iframe title due to cross-origin policy.");
-        }
-      };
-    })
-    .catch(err => {
-      console.error(err);
-      const loader = document.getElementById('loader');
-      loader.innerHTML = '<h2>Oops!</h2><p>Something went wrong. Please try again.</p>';
-    });
-})();
-</script>
-
+            // Dynamically set title from iframe's content
+            try {
+              const iframeTitle = iframe.contentDocument?.title;
+              if (iframeTitle) {
+                document.title = iframeTitle;
+              } else {
+                // Fallback title if iframe doesn't have one
+                document.title = shouldShowMaint ? 'Maintenance Mode' : 'Portfolio';
+              }
+            } catch (e) {
+              console.warn("Cross-origin restriction: Cannot access iframe title.");
+              document.title = shouldShowMaint ? 'Maintenance Mode' : 'Portfolio';
+            }
+          };
+        })
+        .catch(err => {
+          console.error(err);
+          const loader = document.getElementById('loader');
+          loader.innerHTML = '<h2>Oops!</h2><p>Something went wrong. Please try again.</p>';
+          document.title = 'Error Loading Site';
+        });
+    })();
+  </script>
 </body>
 </html>
