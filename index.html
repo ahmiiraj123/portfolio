@@ -143,22 +143,15 @@
     const iframe = document.getElementById('content-frame');
     const loader = document.getElementById('loader');
   
-    // Unified loader: show spinner, swap iframe.src, push history
+    // your existing loader + history helper
     function loadUrl(url, pushState = true) {
       loader.style.display = '';
       iframe.style.display = 'none';
       iframe.src = url;
-      if (pushState) {
-        history.pushState({ page: url }, '', url);
-      }
+      if (pushState) history.pushState({ page: url }, '', url);
     }
   
-    // 1) Initial load already done by your maintenance script...
-    //    but if you want deep‐link support, you could:
-    //    const initial = location.pathname.split('/').pop() || 'portfolio.html';
-    //    loadUrl(initial, false);
-  
-    // 2) Once the iframe finishes loading, wire up only the html links:
+    // intercept links inside the iframe
     iframe.addEventListener('load', () => {
       loader.style.display = 'none';
       iframe.style.display = 'block';
@@ -166,29 +159,37 @@
       let doc;
       try {
         doc = iframe.contentDocument || iframe.contentWindow.document;
-      } catch (err) {
-        // If the iframe is cross‐origin, bail out.
-        return;
+      } catch {
+        return; // cross-origin, bail
       }
   
-      // Only attach to <a href="*.html"> inside the iframe
-      Array.from(doc.querySelectorAll('a[href$=".html"]')).forEach(a => {
+      doc.querySelectorAll('a[href$=".html"]').forEach(a => {
         a.addEventListener('click', e => {
           e.preventDefault();
           const href = a.getAttribute('href');
-          if (!href) return;
-          loadUrl(href);
+  
+          // FULL RELOAD for index.html (Home)
+          if (href === 'index.html') {
+            const fullUrl = window.location.origin
+                          + window.location.pathname.replace(/[^\/]*$/, href);
+            window.top.location.href = fullUrl;
+          } 
+          // SPA load for everything else
+          else {
+            loadUrl(href);
+          }
         });
       });
     });
   
-    // 3) Handle browser back/forward
+    // handle back/forward
     window.addEventListener('popstate', e => {
       const url = (e.state && e.state.page) || 'portfolio.html';
       loadUrl(url, false);
     });
   })();
   </script>
+  
   
 </body>
 </html>
