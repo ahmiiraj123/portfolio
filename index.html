@@ -2,21 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Loading…</title>
+  <title>Portfolio Homepage</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgL_HcBB4-RZpML1-SCeB-jX025r8IaNCajVraijTBjsNY1voUawtfLwC80v-V3ScOwYpy0vSjtSArCg4IqasYTCRS5yTYG839kxOKZBoWLfCOsFItRdii0OpJcQlqRm2P_ftsIAzUsgY4Y8gEmYA_D9q1DcWRbX6gan0pxulHVkqEdYQSTmVVvmAyMtmk/s4032/WhatsApp%20Image%202025-01-22%20at%2012.07.13%20AM.jpeg" />
-  <!-- Or use .ico format -->
-  <!-- <link rel="icon" type="image/x-icon" href="favicon.ico" /> -->
-
   <!-- Google Font: Poppins -->
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
-
   <style>
+    /* ─── Full-viewport Reset ─── */
     html, body {
       margin: 0;
       padding: 0;
@@ -30,6 +24,7 @@
       justify-content: center;
     }
 
+    /* ─── Loader Container ─── */
     #loader {
       text-align: center;
       color: #ffffff;
@@ -41,6 +36,7 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
 
+    /* ─── Animated Spinner (Three Dots) ─── */
     .dots {
       display: flex;
       justify-content: center;
@@ -48,7 +44,6 @@
       gap: 6px;
       margin-bottom: 1rem;
     }
-
     .dot {
       width: 14px;
       height: 14px;
@@ -57,8 +52,7 @@
       opacity: 0.3;
       animation: bounce 1s infinite ease-in-out both;
     }
-
-    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(1) { animation-delay: 0s;   }
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
 
@@ -67,18 +61,19 @@
       40%           { transform: translateY(-12px); opacity: 1; }
     }
 
+    /* ─── Status Text ─── */
     #loader h2 {
       font-size: 1.25rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
-
     #loader p {
       font-size: 0.9rem;
       opacity: 0.85;
       margin: 0;
     }
 
+    /* ─── Iframe container (hidden until loaded) ─── */
     #content-frame {
       display: none;
       border: none;
@@ -91,6 +86,7 @@
   </style>
 </head>
 <body>
+  <!-- Loader: Spinner + Text -->
   <div id="loader">
     <div class="dots">
       <div class="dot"></div>
@@ -101,49 +97,98 @@
     <p>Please wait a moment</p>
   </div>
 
+  <!-- Full-screen iframe; we’ll set its `src` dynamically -->
   <iframe id="content-frame" src=""></iframe>
 
   <script>
     (function() {
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrg8UfKUE_Wh6IE9vjEv0ACF9DHHp2cuNLbn-njgFs8TDXzAE4yj3GtREREuFlTwYcmg/exec';
+      // 1) Replace this with your actual Apps Script "exec" URL:
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec';
 
+      // 2) Ask backend if maintenance is on/off
       fetch(SCRIPT_URL + '?type=maintenance')
         .then(res => {
           if (!res.ok) throw new Error('Network response was not ok');
           return res.json();
         })
         .then(data => {
+          // data = { maintenance: "yes" } or { maintenance: "no" }
           const shouldShowMaint = (data.maintenance === 'yes');
-          const pageToLoad = shouldShowMaint ? 'maintenance.html' : 'portfolio.html';
 
+          // 3) Decide which page to load in the iframe
+          const pageToLoad = shouldShowMaint
+            ? 'maintenance.html'
+            : 'portfolio.html';
+
+          // 4) Set iframe.src
           const iframe = document.getElementById('content-frame');
           iframe.src = pageToLoad;
 
+          // 5) Once iframe content finishes loading, hide loader and show iframe
           iframe.onload = () => {
             document.getElementById('loader').style.display = 'none';
             iframe.style.display = 'block';
-
-            // Try to set title from iframe
-            try {
-              const iframeTitle = iframe.contentDocument?.title;
-              if (iframeTitle) {
-                document.title = iframeTitle;
-              } else {
-                document.title = shouldShowMaint ? 'Maintenance Mode' : 'Portfolio';
-              }
-            } catch (e) {
-              console.warn("Cross-origin restriction: Cannot access iframe title.");
-              document.title = shouldShowMaint ? 'Maintenance Mode' : 'Portfolio';
-            }
           };
         })
         .catch(err => {
           console.error(err);
           const loader = document.getElementById('loader');
           loader.innerHTML = '<h2>Oops!</h2><p>Something went wrong. Please try again.</p>';
-          document.title = 'Error Loading Site';
         });
     })();
   </script>
+
+<script>
+  ;(function() {
+    const iframe = document.getElementById('content-frame');
+    const loader = document.getElementById('loader');
+  
+    // Unified loader: show spinner, swap iframe.src, push history
+    function loadUrl(url, pushState = true) {
+      loader.style.display = '';
+      iframe.style.display = 'none';
+      iframe.src = url;
+      if (pushState) {
+        history.pushState({ page: url }, '', url);
+      }
+    }
+  
+    // 1) Initial load already done by your maintenance script...
+    //    but if you want deep‐link support, you could:
+    //    const initial = location.pathname.split('/').pop() || 'portfolio.html';
+    //    loadUrl(initial, false);
+  
+    // 2) Once the iframe finishes loading, wire up only the html links:
+    iframe.addEventListener('load', () => {
+      loader.style.display = 'none';
+      iframe.style.display = 'block';
+  
+      let doc;
+      try {
+        doc = iframe.contentDocument || iframe.contentWindow.document;
+      } catch (err) {
+        // If the iframe is cross‐origin, bail out.
+        return;
+      }
+  
+      // Only attach to <a href="*.html"> inside the iframe
+      Array.from(doc.querySelectorAll('a[href$=".html"]')).forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const href = a.getAttribute('href');
+          if (!href) return;
+          loadUrl(href);
+        });
+      });
+    });
+  
+    // 3) Handle browser back/forward
+    window.addEventListener('popstate', e => {
+      const url = (e.state && e.state.page) || 'portfolio.html';
+      loadUrl(url, false);
+    });
+  })();
+  </script>
+  
 </body>
 </html>
