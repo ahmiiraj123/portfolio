@@ -69,17 +69,13 @@
       text-align: center;
     }
     .slide-container img {
-      width: 100%;
-      height: auto;
-      display: block;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      width: 100%; height: auto; display: block; margin-bottom: 20px;
+      border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
     .slide-container h2 { margin-bottom: 15px; font-size: 2rem; }
     .slide-container p {
-      font-size: 1.1rem; text-align: center;
-      max-width: 700px; line-height: 1.7;
+      font-size: 1.1rem; text-align: center; max-width: 700px;
+      line-height: 1.7;
     }
 
     .nav-btn {
@@ -106,10 +102,8 @@
     .close-btn:hover { background: rgba(255,255,255,0.6); transform: rotate(90deg); }
 
     #lightbox-link {
-      display: none;
-      margin-top: 12px;
-      text-decoration: underline;
-      color: #f49892;
+      display: none; margin-top: 12px;
+      text-decoration: underline; color: #f49892;
     }
 
     @keyframes spin {
@@ -117,21 +111,53 @@
       100% { transform: rotate(360deg); }
     }
     #loader {
-      position:fixed; inset:0;
-      background:rgba(255,255,255,0.8);
-      z-index:9999; display:flex;
-      align-items:center; justify-content:center;
+      position:fixed; inset:0; background:rgba(255,255,255,0.8);
+      z-index:9999; display:flex; align-items:center; justify-content:center;
     }
     #loader div {
-      border:4px solid #f3f3f3;
-      border-top:4px solid #f49892;
-      border-radius:50%;
-      width:40px; height:40px;
-      animation:spin 1s linear infinite;
+      border:4px solid #f3f3f3; border-top:4px solid #f49892;
+      border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;
     }
   </style>
 </head>
 <body>
+  <div class="text-center mt-4">
+    <a
+      href="portfolio.html"
+      target="_top"
+      style="
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #6c63ff;
+        border-radius: 0.5rem;
+        color: #6c63ff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        margin-bottom: 20px;
+      "
+      onmouseover="
+        this.style.backgroundColor = '#6c63ff';
+        this.style.color = '#ffffff';
+        this.style.transform = 'translateY(-2px)';
+      "
+      onmouseout="
+        this.style.backgroundColor = 'transparent';
+        this.style.color = '#6c63ff';
+        this.style.transform = 'translateY(0)';
+      "
+       onclick="
+       const parentUrl = window.location.origin
+                       + window.location.pathname.replace(/[^\/]*$/, 'index.html');
+       window.top.location.href = parentUrl;
+       return false;
+     "
+    >
+      Home
+    </a>
+  </div>
+  
+    
   <div class="filters" id="filters"></div>
   <div class="album" id="gallery"></div>
 
@@ -141,9 +167,7 @@
       <img id="lightbox-img" src="" alt="">
       <h2 id="lightbox-title"></h2>
       <p id="lightbox-desc"></p>
-      <a id="lightbox-link" href="" target="_blank" rel="noopener">
-        Visit source
-      </a>
+      <a id="lightbox-link" href="" target="_blank" rel="noopener">Visit source</a>
     </div>
     <button class="nav-btn nav-prev">‹</button>
     <button class="nav-btn nav-next">›</button>
@@ -156,13 +180,30 @@
   <script>
     const GSA_URL = 'https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec';
     const loader = document.getElementById('loader');
+    const filtersEl = document.getElementById('filters');
     loader.style.display = 'flex';
+
+    // Grab hash tag (decoded), empty string if none or "#"
+    const hashTag = decodeURIComponent(window.location.hash.slice(1) || '');
 
     let iso, allItems, currentSet, currentIndex = 0;
 
     fetch(`${GSA_URL}?type=gallery`)
       .then(r => r.json())
-      .then(buildGallery)
+      .then(items => {
+        // If hashTag (not "All"), filter array first & hide filters bar
+        const filteredItems = (hashTag && hashTag !== 'All')
+          ? items.filter(i => i.tags.includes(hashTag))
+          : items;
+
+        buildGallery(filteredItems);
+
+        // Only in full mode (no hash or "All") do we listen/apply hashchange
+        if (!hashTag || hashTag === 'All') {
+          window.addEventListener('hashchange', applyFilterFromHash);
+          applyFilterFromHash();
+        }
+      })
       .catch(err => {
         loader.textContent = 'Failed to load content.';
         console.error(err);
@@ -170,17 +211,21 @@
 
     function buildGallery(items) {
       const galleryEl = document.getElementById('gallery');
-      const filtersEl = document.getElementById('filters');
 
-      // Filters
-      const tagSet = new Set();
-      items.forEach(i => i.tags.forEach(t => tagSet.add(t)));
-      const tags = ['All', ...tagSet];
-      filtersEl.innerHTML = tags.map((t,i) =>
-        `<button class="filter-btn${i===0?' active':''}" data-filter="${t}">${t}</button>`
-      ).join('');
+      // Hide filters entirely in single-tag mode
+      if (hashTag && hashTag !== 'All') {
+        filtersEl.style.display = 'none';
+      } else {
+        // Render filter buttons
+        const tagSet = new Set();
+        items.forEach(i => i.tags.forEach(t => tagSet.add(t)));
+        const tags = ['All', ...tagSet];
+        filtersEl.innerHTML = tags.map((t, i) =>
+          `<button class="filter-btn${i===0?' active':''}" data-filter="${t}">${t}</button>`
+        ).join('');
+      }
 
-      // Items
+      // Render gallery items
       galleryEl.innerHTML = items.map(i => {
         const spans = i.tags.map((t, idx) =>
           `<span class="tag${idx>0?' right':''}">${t}</span>`
@@ -197,7 +242,7 @@
           </div>`;
       }).join('');
 
-      // Wait for images then init Isotope
+      // Initialize Isotope after images load
       imagesLoaded(galleryEl, () => {
         iso = new Isotope(galleryEl, {
           itemSelector: '.album-item',
@@ -218,22 +263,36 @@
         });
         currentSet = allItems.slice();
 
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-            btn.classList.add('active');
-            const f = btn.dataset.filter;
-            const filterFn = f==='All'
-              ? '*'
-              : item => item.dataset.tags.split(',').includes(f);
-            iso.arrange({ filter: filterFn });
-            updateCurrentSet();
+        // Wire up filter buttons only in full mode
+        if (!hashTag || hashTag === 'All') {
+          document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+              btn.classList.add('active');
+              const f = btn.dataset.filter;
+              iso.arrange({ filter: f==='All' 
+                ? '*' 
+                : item => item.dataset.tags.split(',').includes(f)
+              });
+              updateCurrentSet();
+              history.replaceState(null, '', f==='All'
+                ? window.location.pathname 
+                : `#${encodeURIComponent(f)}`);
+            });
           });
-        });
+        }
 
         initLightboxControls();
         loader.style.display = 'none';
       });
+    }
+
+    // Used only in full mode
+    function applyFilterFromHash() {
+      const tag = decodeURIComponent(window.location.hash.slice(1) || 'All');
+      const btn = Array.from(document.querySelectorAll('.filter-btn'))
+                       .find(b => b.dataset.filter === tag);
+      if (btn) btn.click();
     }
 
     function updateCurrentSet() {
@@ -241,8 +300,8 @@
     }
 
     function openLightbox(idx, direction = 0) {
-      const el      = currentSet[idx];
-      const img     = el.querySelector('img');
+      const el = currentSet[idx];
+      const img = el.querySelector('img');
       const linkUrl = el.dataset.link;
       const container = document.querySelector('.slide-container');
 
@@ -261,8 +320,7 @@
       }
 
       if (direction !== 0) {
-        // slide out
-        container.style.transform = `translateX(${ -direction * 100 }%)`;
+        container.style.transform = `translateX(${-direction * 100}%)`;
         container.addEventListener('transitionend', onTransitionEnd, { once: true });
       } else {
         setContent();
@@ -271,12 +329,9 @@
 
       function onTransitionEnd() {
         setContent();
-        // reset off-screen start
         container.style.transition = 'none';
-        container.style.transform = `translateX(${ direction * 100 }%)`;
-        // force reflow
-        container.offsetHeight;
-        // slide in
+        container.style.transform = `translateX(${direction * 100}%)`;
+        container.offsetHeight; // reflow
         container.style.transition = 'transform 0.3s ease';
         container.style.transform = 'translateX(0)';
       }
@@ -316,16 +371,13 @@
         if (e.target === lightboxEl) closeLightbox();
       });
 
-      // touch handlers
       lightboxEl.addEventListener('touchstart', e => {
         if (e.touches.length === 1) startX = e.touches[0].pageX;
       });
       lightboxEl.addEventListener('touchend', e => {
         endX = e.changedTouches[0].pageX;
         const dx = endX - startX;
-        if (Math.abs(dx) > threshold) {
-          dx > 0 ? navigate(-1) : navigate(1);
-        }
+        if (Math.abs(dx) > threshold) dx > 0 ? navigate(-1) : navigate(1);
       });
     }
   </script>
