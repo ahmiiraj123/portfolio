@@ -2,13 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dynamic Masonry Gallery</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+  <script src="script.js"></script>
+  <title>Projects Page</title>
   <style>
+   #back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  background: #6c63ff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s, visibility .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+
+
+    /* End-of-content message */
+    .end-message {
+      text-align: center;
+      font-size: 1rem;
+      color: #777;
+      margin: 20px 0;
+    }
+    /* “View Other Projects” button */
+    #view-all-projects {
+      display: none;
+      margin: 10px auto;
+      padding: 8px 16px;
+      background: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    /* your existing CSS… */
+    html, body { margin: 0; padding: 0; }
+    header, footer { width: 100%; margin: 0; }
     .body-lock { overflow: hidden; position: fixed; width: 100%; }
     * { box-sizing: border-box; margin: 0; padding: 0 }
-    body { font-family: sans-serif; background: #fafafa; padding: 20px }
+    body { font-family: sans-serif; background: #fafafa; }
     html { overflow-y: scroll; }
-
     .filters { text-align: center; margin-bottom: 20px; }
     .filters button {
       background: #eee; border: none; margin: 0 5px;
@@ -19,7 +73,6 @@
     .filters button:hover {
       background: #f49892; color: #fff;
     }
-
     .album {
       position: relative; max-width: 1320px; margin: 0 auto;
     }
@@ -30,7 +83,6 @@
     }
     @media (max-width: 1024px) { .album-item { width: calc((100% / 2) - 10px); } }
     @media (max-width: 768px)  { .album-item { width: 100%; } }
-
     .album-item img {
       width: 100%; height: auto; object-fit: cover; display: block;
     }
@@ -40,7 +92,6 @@
       padding: 2px 6px; font-size: .75rem; border-radius: 3px;
     }
     .tag.right { left: auto; right: 8px; }
-
     .overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.6);
       color: #fff; opacity: 0; display: flex;
@@ -51,7 +102,6 @@
     .album-item:hover .overlay { opacity: 1; }
     .overlay h3 { margin-bottom: 6px; font-size: 1.1rem; }
     .overlay p  { font-size: .9rem; }
-
     .lightbox {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0,0,0,0.95); display: none;
@@ -60,7 +110,6 @@
       padding: 20px;
     }
     .lightbox.active { display: flex; }
-
     .slide-container {
       position: relative;
       transition: transform 0.3s ease;
@@ -77,7 +126,6 @@
       font-size: 1.1rem; text-align: center; max-width: 700px;
       line-height: 1.7;
     }
-
     .nav-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
       background: rgba(255,255,255,0.2); color: #fff;
@@ -90,7 +138,6 @@
     .nav-btn:hover { background: rgba(255,255,255,0.4); }
     .nav-prev { left: 30px; }
     .nav-next { right: 30px; }
-
     .close-btn {
       position: absolute; top: 30px; right: 30px;
       background: rgba(255,255,255,0.3); border: none;
@@ -100,12 +147,10 @@
       transition: all 0.3s ease;
     }
     .close-btn:hover { background: rgba(255,255,255,0.6); transform: rotate(90deg); }
-
     #lightbox-link {
       display: none; margin-top: 12px;
       text-decoration: underline; color: #f49892;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -118,109 +163,153 @@
       border:4px solid #f3f3f3; border-top:4px solid #f49892;
       border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;
     }
+    header {
+      background: #fff;
+      border-bottom: 1px solid #eaeaea;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #6c63ff;
+      text-decoration: none;
+    }
+    header nav a {
+      margin-left: 1rem;
+      color: #555;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    header nav a:hover {
+      color: #6c63ff;
+    }
+    footer {
+      background: #fff;
+      border-top: 1px solid #eaeaea;
+      text-align: center;
+      padding: 1rem 2rem;
+      margin-top: 2rem;
+      font-size: .9rem;
+      color: #777;
+    }
+    main { 
+      padding: 2rem 0;
+      min-height: 100vh;
+    }
+    /* Inline loader */
+    .loader-inline {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .loader-inline .spinner {
+      display: inline-block;
+      width: 30px; height: 30px;
+      border:4px solid #f3f3f3;
+      border-top:4px solid #f49892;
+      border-radius:50%;
+      animation: spin 1s linear infinite;
+    }
   </style>
 </head>
+
 <body>
-  <!-- Buttons / Links BELOW the grid -->
-  <div class="text-center mt-4">
-    <a
-    href="portfolio.html"
-    style="
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      border: 2px solid #6c63ff;
-      border-radius: 0.5rem;
-      color: #6c63ff;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-    "
-    onmouseover="
-      this.style.backgroundColor = '#6c63ff';
-      this.style.color = '#ffffff';
-      this.style.transform = 'translateY(-2px)';
-    "
-    onmouseout="
-      this.style.backgroundColor = 'transparent';
-      this.style.color = '#6c63ff';
-      this.style.transform = 'translateY(0)';
-    "
-  >
-    Home
-  </a>
-  
-  </div>
-  
+  <header>
+    <a href="portfolio.html" class="logo">Ahmar Manzoor</a>
+    <nav>
+      <a href="portfolio.html"><i class="bi bi-house"></i> Home</a>
+      <a href="portfolio.html#about"><i class="bi bi-person"></i> About</a>
+      <a href="portfolio.html#contact"><i class="bi bi-envelope-fill"></i> Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <button id="back-to-top" aria-label="Back to top">
+      <i class="bi bi-arrow-up"></i>
+    </button>
     
-  <div class="filters" id="filters"></div>
-  <div class="album" id="gallery"></div>
 
-  <div class="lightbox" id="lightbox">
-    <button class="close-btn">×</button>
-    <div class="slide-container">
-      <img id="lightbox-img" src="" alt="">
-      <h2 id="lightbox-title"></h2>
-      <p id="lightbox-desc"></p>
-      <a id="lightbox-link" href="" target="_blank" rel="noopener">Visit source</a>
+
+
+    <div class="filters" id="filters"></div>
+    <button id="view-all-projects">View Other Projects</button>
+    <div class="album" id="gallery"></div>
+
+    <div class="lightbox" id="lightbox">
+      <button class="close-btn">×</button>
+      <div class="slide-container">
+        <img id="lightbox-img" src="" alt="">
+        <h2 id="lightbox-title"></h2>
+        <p id="lightbox-desc"></p>
+        <a id="lightbox-link" href="" target="_blank" rel="noopener">Visit source</a>
+      </div>
+      <button class="nav-btn nav-prev">‹</button>
+      <button class="nav-btn nav-next">›</button>
     </div>
-    <button class="nav-btn nav-prev">‹</button>
-    <button class="nav-btn nav-next">›</button>
-  </div>
 
-  <div id="loader"><div></div></div>
+    <div id="loader-inline" class="loader-inline" style="display: none;">
+      <div class="spinner"></div>
+    </div>
+    <div id="loader"><div></div></div>
+  </main>
+
+  <footer>
+    Developed by <a href="https://linktr.ee/ahmiiraj123" target="_blank" rel="noopener noreferrer">Ahmar Manzoor</a>. All rights reserved. &copy; 2025
+  </footer>
 
   <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
   <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+
   <script>
-    const GSA_URL = 'https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec';
-    const loader = document.getElementById('loader');
-    const filtersEl = document.getElementById('filters');
-    loader.style.display = 'flex';
+    let offset = 0, limit = 20, isLoading = false, noMore = false;
+    let scrollPos = 0, currentSet = [], currentIndex = 0;
+    const loaderFull   = document.getElementById('loader');
+    const loaderInline = document.getElementById('loader-inline');
+    const filtersEl    = document.getElementById('filters');
+    const viewAllBtn   = document.getElementById('view-all-projects');
+    let iso;
 
-    // Grab hash tag (decoded), empty string if none or "#"
-    const hashTag = decodeURIComponent(window.location.hash.slice(1) || '');
+    // Kick off
+    loadPage();
 
-    let iso, allItems, currentSet, currentIndex = 0;
+    function loadPage() {
+      if (isLoading || noMore) return;
+      isLoading = true;
+      offset === 0
+        ? loaderFull.style.display = 'flex'
+        : loaderInline.style.display = 'block';
 
-    fetch(`${GSA_URL}?type=gallery`)
-      .then(r => r.json())
-      .then(items => {
-        // If hashTag (not "All"), filter array first & hide filters bar
-        const filteredItems = (hashTag && hashTag !== 'All')
-          ? items.filter(i => i.tags.includes(hashTag))
-          : items;
+      fetch(`${window.GAS_BASE_URL}?type=gallery&offset=${offset}&limit=${limit}`)
+        .then(r => r.json())
+        .then(items => {
+          if (items.length < limit) noMore = true;
+          appendItems(items);
+          offset += items.length;
+        })
+        .catch(err => {
+          console.error(err);
+          noMore = true;
+          loaderInline.textContent = 'Failed to load more.';
+        })
+        .finally(() => {
+          isLoading = false;
+          if (offset <= limit) loaderFull.style.display = 'none';
+          else loaderInline.style.display = 'none';
+          if (noMore) showEndMessage();
+        });
+    }
 
-        buildGallery(filteredItems);
-
-        // Only in full mode (no hash or "All") do we listen/apply hashchange
-        if (!hashTag || hashTag === 'All') {
-          window.addEventListener('hashchange', applyFilterFromHash);
-          applyFilterFromHash();
-        }
-      })
-      .catch(err => {
-        loader.textContent = 'Failed to load content.';
-        console.error(err);
-      });
-
-    function buildGallery(items) {
-      const galleryEl = document.getElementById('gallery');
-
-      // Hide filters entirely in single-tag mode
-      if (hashTag && hashTag !== 'All') {
-        filtersEl.style.display = 'none';
-      } else {
-        // Render filter buttons
-        const tagSet = new Set();
-        items.forEach(i => i.tags.forEach(t => tagSet.add(t)));
-        const tags = ['All', ...tagSet];
-        filtersEl.innerHTML = tags.map((t, i) =>
-          `<button class="filter-btn${i===0?' active':''}" data-filter="${t}">${t}</button>`
-        ).join('');
-      }
-
-      // Render gallery items
-      galleryEl.innerHTML = items.map(i => {
+    function appendItems(items) {
+      if (!items.length) return;
+      const container = document.getElementById('gallery');
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = items.map(i => {
         const spans = i.tags.map((t, idx) =>
           `<span class="tag${idx>0?' right':''}">${t}</span>`
         ).join('');
@@ -235,149 +324,194 @@
             <div class="overlay"><h3></h3><p></p></div>
           </div>`;
       }).join('');
+      const newElems = Array.from(wrapper.children);
+      container.append(...newElems);
 
-      // Initialize Isotope after images load
-      imagesLoaded(galleryEl, () => {
-        iso = new Isotope(galleryEl, {
-          itemSelector: '.album-item',
-          layoutMode: 'masonry',
-          masonry: { columnWidth: '.album-item', gutter: 10 },
-          horizontalOrder: true
-        });
-
-        allItems = Array.from(galleryEl.querySelectorAll('.album-item'));
-        allItems.forEach(el => {
-          el.querySelector('h3').textContent = el.dataset.title;
-          el.querySelector('p').textContent  = el.dataset.desc;
-          el.addEventListener('click', () => {
-            updateCurrentSet();
-            currentIndex = currentSet.indexOf(el);
-            openLightbox(currentIndex, 0);
+      imagesLoaded(newElems, () => {
+        if (!iso) {
+          // First batch
+          iso = new Isotope(container, {
+            itemSelector: '.album-item',
+            layoutMode: 'masonry',
+            percentPosition: true,
+            masonry: { columnWidth: '.album-item', gutter: 10 }
           });
-        });
-        currentSet = allItems.slice();
-
-        // Wire up filter buttons only in full mode
-        if (!hashTag || hashTag === 'All') {
-          document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-              btn.classList.add('active');
-              const f = btn.dataset.filter;
-              iso.arrange({ filter: f==='All' 
-                ? '*' 
-                : item => item.dataset.tags.split(',').includes(f)
-              });
-              updateCurrentSet();
-              history.replaceState(null, '', f==='All'
-                ? window.location.pathname 
-                : `#${encodeURIComponent(f)}`);
-            });
-          });
+          buildFilters();
+          bindFilters();
+          bindScroll();
+          initLightbox();
+          applyInitialFilter();
+        } else {
+          // More pages
+          iso.appended(newElems);
+          bindItemClicks(newElems);
+          applyCurrentFilter();
+          iso.layout();
         }
-
-        initLightboxControls();
-        loader.style.display = 'none';
+        updateCurrentSet();
       });
     }
 
-    // Used only in full mode
-    function applyFilterFromHash() {
-      const tag = decodeURIComponent(window.location.hash.slice(1) || 'All');
-      const btn = Array.from(document.querySelectorAll('.filter-btn'))
-                       .find(b => b.dataset.filter === tag);
-      if (btn) btn.click();
+    // Filters, now dynamic on each call
+    function buildFilters() {
+      const currentTag = decodeURIComponent(location.hash.slice(1) || 'All');
+      if (currentTag !== 'All') {
+        filtersEl.style.display = 'none';
+        return;
+      }
+      filtersEl.style.display = '';
+      const tags = new Set();
+      document.querySelectorAll('.album-item')
+        .forEach(el => el.dataset.tags.split(',').forEach(t => tags.add(t)));
+      filtersEl.innerHTML = ['All', ...tags].map((t,i) =>
+        `<button class="filter-btn${i===0?' active':''}" data-filter="${t}">${t}</button>`
+      ).join('');
+    }
+
+    function bindFilters() {
+      filtersEl.addEventListener('click', e => {
+        if (!e.target.matches('.filter-btn')) return;
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        e.target.classList.add('active');
+        const f = e.target.dataset.filter;
+        history.replaceState(null,'', f==='All' ? location.pathname : `#${encodeURIComponent(f)}`);
+        applyCurrentFilter();
+      });
+      window.addEventListener('hashchange', () => {
+        buildFilters();
+        bindFilters(); // rebind after rebuild
+        applyInitialFilter();
+      });
+    }
+
+    function applyInitialFilter() {
+      const currentTag = decodeURIComponent(location.hash.slice(1) || 'All');
+      if (currentTag !== 'All') {
+        viewAllBtn.style.display = 'block';
+        iso.arrange({ filter: el => el.dataset.tags.split(',').includes(currentTag) });
+        iso.layout();
+      } else {
+        viewAllBtn.style.display = 'none';
+      }
+    }
+
+    viewAllBtn.addEventListener('click', () => {
+      history.replaceState(null,'', location.pathname + '#All');
+      buildFilters();
+      bindFilters();
+      applyCurrentFilter();
+      viewAllBtn.style.display = 'none';
+    });
+
+    function applyCurrentFilter() {
+      const active = document.querySelector('.filter-btn.active').dataset.filter;
+      iso.arrange({
+        filter: active==='All'
+          ? '*'
+          : el => el.dataset.tags.split(',').includes(active)
+      });
+      iso.layout();
+    }
+
+    function bindScroll() {
+      window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+          loadPage();
+        }
+      });
+    }
+
+    function showEndMessage() {
+      if (document.querySelector('.end-message')) return;
+      const msg = document.createElement('div');
+      msg.className = 'end-message';
+      msg.textContent = 'You have reached the end.';
+      document.getElementById('gallery').after(msg);
     }
 
     function updateCurrentSet() {
       currentSet = iso.getFilteredItemElements();
     }
 
-    function openLightbox(idx, direction = 0) {
-      const el = currentSet[idx];
-      const img = el.querySelector('img');
-      const linkUrl = el.dataset.link;
-      const container = document.querySelector('.slide-container');
-
-      function setContent() {
-        document.getElementById('lightbox-img').src   = img.src;
-        document.getElementById('lightbox-img').alt   = img.alt;
-        document.getElementById('lightbox-title').textContent = el.dataset.title;
-        document.getElementById('lightbox-desc').textContent  = el.dataset.desc;
-        const btn = document.getElementById('lightbox-link');
-        if (linkUrl) {
-          btn.href = linkUrl;
-          btn.style.display = 'inline-block';
-        } else {
-          btn.style.display = 'none';
-        }
-      }
-
-      if (direction !== 0) {
-        container.style.transform = `translateX(${-direction * 100}%)`;
-        container.addEventListener('transitionend', onTransitionEnd, { once: true });
-      } else {
-        setContent();
-        container.style.transform = 'translateX(0)';
-      }
-
-      function onTransitionEnd() {
-        setContent();
-        container.style.transition = 'none';
-        container.style.transform = `translateX(${direction * 100}%)`;
-        container.offsetHeight; // reflow
-        container.style.transition = 'transform 0.3s ease';
-        container.style.transform = 'translateX(0)';
-      }
-
-      document.getElementById('lightbox').classList.add('active');
-      document.body.classList.add('body-lock');
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('active');
-      document.body.classList.remove('body-lock');
-    }
-
-    function navigate(dir) {
-      const len = currentSet.length;
-      currentIndex = (currentIndex + dir + len) % len;
-      openLightbox(currentIndex, dir);
-    }
-
-    function initLightboxControls() {
-      const lightboxEl = document.getElementById('lightbox');
-      let startX = 0, endX = 0;
-      const threshold = 50;
-
+    function initLightbox() {
+      bindItemClicks(Array.from(document.querySelectorAll('.album-item')));
       document.querySelector('.close-btn').onclick = closeLightbox;
       document.querySelector('.nav-prev').onclick  = () => navigate(-1);
       document.querySelector('.nav-next').onclick  = () => navigate(1);
-
       document.addEventListener('keydown', e => {
-        if (!lightboxEl.classList.contains('active')) return;
-        if (e.key === 'ArrowRight') navigate(1);
-        if (e.key === 'ArrowLeft')  navigate(-1);
-        if (e.key === 'Escape')     closeLightbox();
-      });
-
-      lightboxEl.addEventListener('click', e => {
-        if (e.target === lightboxEl) closeLightbox();
-      });
-
-      lightboxEl.addEventListener('touchstart', e => {
-        if (e.touches.length === 1) startX = e.touches[0].pageX;
-      });
-      lightboxEl.addEventListener('touchend', e => {
-        endX = e.changedTouches[0].pageX;
-        const dx = endX - startX;
-        if (Math.abs(dx) > threshold) dx > 0 ? navigate(-1) : navigate(1);
+        const lb = document.getElementById('lightbox');
+        if (!lb.classList.contains('active')) return;
+        if (e.key==='Escape') closeLightbox();
+        if (e.key==='ArrowRight') navigate(1);
+        if (e.key==='ArrowLeft')  navigate(-1);
       });
     }
+
+    function bindItemClicks(elems) {
+      elems.forEach(el => {
+        el.querySelector('h3').textContent = el.dataset.title;
+        el.querySelector('p').textContent  = el.dataset.desc;
+        el.onclick = () => {
+          updateCurrentSet();
+          currentIndex = currentSet.indexOf(el);
+          openLightbox(currentIndex);
+        };
+      });
+    }
+
+    function openLightbox(idx) {
+      scrollPos = window.scrollY;
+      document.body.style.top = `-${scrollPos}px`;
+      document.body.classList.add('body-lock');
+      const el = currentSet[idx];
+      document.getElementById('lightbox-img').src   = el.querySelector('img').src;
+      document.getElementById('lightbox-title').textContent = el.dataset.title;
+      document.getElementById('lightbox-desc').textContent  = el.dataset.desc;
+      const link = document.getElementById('lightbox-link');
+      if (el.dataset.link) {
+        link.href = el.dataset.link; link.style.display = 'inline-block';
+      } else link.style.display = 'none';
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.body.classList.remove('body-lock');
+      document.body.style.top = '';
+      window.scrollTo(0, scrollPos);
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    function navigate(dir) {
+      currentIndex = (currentIndex + dir + currentSet.length) % currentSet.length;
+      openLightbox(currentIndex);
+    }
+
+    // Maintenance redirect
+    (function(){
+      fetch(`${window.GAS_BASE_URL}?type=maintenance`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.maintenance === 'yes') window.location.replace('maintenance.html');
+        })
+        .catch(console.error);
+    })();
+
+    const backToTop = document.getElementById('back-to-top');
+
+// Show button after scrolling down 200px
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 200) {
+    backToTop.classList.add('show');
+  } else {
+    backToTop.classList.remove('show');
+  }
+});
+
+// Smooth scroll to top when clicked
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
   </script>
-
-
-
-
 </body>
 </html>
