@@ -292,51 +292,13 @@ header nav.nav-links a:hover {
 @media (max-width: 768px) {
   header {
     flex-wrap: wrap;
-     position: relative;
   }
-   header .menu-toggle {
-    display: flex !important;
-    z-index: 101;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;    /* a bit wider so the bars show */
-    height: 22px;   /* taller for spacing */
-    padding: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
+  header .menu-toggle {
+    display: flex;
   }
- /* 2) Style each bar so it’s visible */
-  header .menu-toggle span {
-    width: 100%;           /* fills the 30px container */
-    height: 3px;
-    background: var(--primary);
-    border-radius: 2px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  header .menu-toggle span:not(:last-child) {
-    margin-bottom: 5px;    /* space between bars */
-  }
-
-  /* 3) Drop the nav below the header so it doesn’t overlap */
   header nav.nav-links {
-    position: absolute;
-    top: 100%;
-    left: 0;
     width: 100%;
-    background: var(--bg);
-    box-shadow: 0 2px 8px var(--shadow);
-    margin: 0;             /* override any margin-top */
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transition: max-height 0.5s ease, opacity 0.3s ease;
   }
-  header nav.nav-links.show {
-    max-height: 400px;
-    opacity: 1;
-  }
-}
 }
 
 
