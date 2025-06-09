@@ -9,6 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+  <script src="script.js"></script>
   <style>
     /* ─── Full-viewport Reset ─── */
     html, body {
@@ -102,11 +103,9 @@
 
   <script>
     (function() {
-      // 1) Replace this with your actual Apps Script "exec" URL:
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec';
-
+     
       // 2) Ask backend if maintenance is on/off
-      fetch(SCRIPT_URL + '?type=maintenance')
+      fetch(window.GAS_BASE_URL + '?type=maintenance')
         .then(res => {
           if (!res.ok) throw new Error('Network response was not ok');
           return res.json();
