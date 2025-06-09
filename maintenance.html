@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="script.js"></script>
   <meta charset="UTF-8" />
   <title>Site Under Maintenance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -189,5 +190,31 @@
       Contact Support
     </a>
   </div>
+
+
+  <script>
+    (function() {
+      
+      fetch(`${window.GAS_BASE_URL}?type=maintenance`)
+        .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
+        .then(data => {
+          // If maintenance flag is "no", bounce back to the homepage
+          if (data.maintenance === 'no') {
+            // If we're inside an iframe, redirect the top‐level window:
+            const redirect = () => window.top.location.replace('index.html');
+            (window.top === window.self) ? window.location.replace('index.html') : redirect();
+          }
+        })
+        .catch(err => {
+          console.error('Maintenance‐check failed:', err);
+          // (Optional) You could also redirect on error to avoid trapping users here
+          // window.location.replace('index.html');
+        });
+    })();
+  </script>
+  
 </body>
 </html>
