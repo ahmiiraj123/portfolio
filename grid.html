@@ -9,6 +9,32 @@
   <script src="script.js"></script>
   <title>Projects Page</title>
   <style>
+    :root {
+  --primary: #6c63ff;
+  /* … */
+}
+
+
+    .album-item {
+  position: relative; /* already set, but needed for absolute children */
+}
+
+/* Title badge styling */
+.album-item .title-badge {
+  position: absolute;
+  bottom: 8px;              /* same inset as your tags */
+  left: 8px;                /* align with left tags */
+  background: var(--primary);
+  color: #fff;
+  padding: 2px 6px;
+  font-size: .75rem;
+  border-radius: 3px;
+  pointer-events: none;     /* won’t block clicking the item */
+  z-index: 1;               /* sits above the image but below the overlay */
+}
+
+
+    
    #back-to-top {
   position: fixed;
   bottom: 2rem;
@@ -431,25 +457,32 @@ header nav.nav-links a:hover {
         });
     }
 
-    function appendItems(items) {
-      if (!items.length) return;
-      const container = document.getElementById('gallery');
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = items.map(i => {
-        const spans = i.tags.map((t, idx) =>
-          `<span class="tag${idx>0?' right':''}">${t}</span>`
-        ).join('');
-        return `
-          <div class="album-item"
-               data-tags="${i.tags.join(',')}"
-               data-title="${i.title}"
-               data-desc="${i.description}"
-               data-link="${i.linkUrl||''}">
-            ${spans}
-            <img src="${i.imageUrl}" alt="${i.altText}">
-            <div class="overlay"><h3></h3><p></p></div>
-          </div>`;
-      }).join('');
+   function appendItems(items) {
+  if (!items.length) return;
+  const container = document.getElementById('gallery');
+  const wrapper = document.createElement('div');
+
+  wrapper.innerHTML = items.map(i => {
+    // build tag spans
+    const tagSpans = i.tags
+      .map((t, idx) => `<span class="tag${idx > 0 ? ' right' : ''}">${t}</span>`)
+      .join('');
+
+    // title goes in a badge that we'll position
+    const titleBadge = `<span class="title-badge">${i.title}</span>`;
+
+    return `
+      <div class="album-item"
+           data-tags="${i.tags.join(',')}"
+           data-title="${i.title}"
+           data-desc="${i.description}"
+           data-link="${i.linkUrl || ''}">
+        ${tagSpans}
+        <img src="${i.imageUrl}" alt="${i.altText}">
+        <div class="overlay"><h3></h3><p></p></div>
+        ${titleBadge}    <!-- moved here -->
+      </div>`;
+  }).join('');
       const newElems = Array.from(wrapper.children);
       container.append(...newElems);
 
