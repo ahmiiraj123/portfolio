@@ -7,8 +7,8 @@
     name="description" 
     content="Graphic Designer Portfolio showcasing stunning visuals and unique designs. Explore the portfolio, learn about the designer, and get in touch." 
   />
- 
-  <title>Graphic Designer Portfolio</title>
+  <script src="script.js"></script>
+  <title>Home Page</title>
   <!-- Bootstrap CSS -->
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
@@ -28,11 +28,7 @@ href="https://unpkg.com/aos@2.3.1/dist/aos.css"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" 
   />
 
-  <script>
-    // Change this single string whenever your Apps Script URL changes.
-    window.GAS_BASE_URL =
-      "https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec";
-  </script>
+
   <style>
     :root {
       --nav-font: "Poppins",  sans-serif;
@@ -898,6 +894,11 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
       <!-- JS will inject each .col-md-3 here -->
     </div>
   </div>
+
+
+
+
+  
 </section>
 
 <script>
@@ -955,7 +956,17 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
         .getElementById("about-website-link")
         .setAttribute("href", siteHref);
 
-      document.getElementById("about-phone").textContent = about.Phone;
+        try {
+  const aboutPhoneEl = document.getElementById("about-phone");
+  if (aboutPhoneEl && about.Phone) {
+    const rawPhone = String(about.Phone).replace(/\D/g, '');
+    const phoneWithZero = rawPhone ? (rawPhone.startsWith('+') ? rawPhone : '+' + rawPhone) : 'N/A';
+    aboutPhoneEl.textContent = phoneWithZero;
+  }
+} catch (err) {
+  console.warn('Failed to inject About phone:', err);
+}
+
       document.getElementById("about-city").textContent = about.City;
       document.getElementById("about-age").textContent = about.Age;
       document.getElementById("about-degree").textContent = about.Degree;
@@ -965,6 +976,37 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
       document
         .getElementById("about-email-link")
         .setAttribute("href", "mailto:" + about.Email);
+
+// ── Also update Contact section fields from About data ──
+const contactEmailEl = document.querySelector('#contact-email');
+const contactPhoneEl = document.querySelector('#contact-phone');
+const contactAddressEl = document.querySelector('#contact-address');
+
+// Update Email
+if (contactEmailEl) {
+  contactEmailEl.textContent = about.Email || 'N/A';
+  contactEmailEl.setAttribute('href', `mailto:${about.Email || ''}`);
+}
+
+// Update Address (optional fallback)
+if (contactAddressEl) {
+  contactAddressEl.textContent = about.City || 'N/A';
+}
+
+
+try {
+  const contactPhoneEl = document.querySelector('#contact-phone');
+  if (contactPhoneEl && about.Phone) {
+    const rawPhone = String(about.Phone).replace(/\D/g, '');
+    const phoneWithZero = rawPhone ? (rawPhone.startsWith('0') ? rawPhone : '+' + rawPhone) : 'N/A';
+    contactPhoneEl.textContent = phoneWithZero;
+  }
+} catch (err) {
+  console.warn('Phone injection failed:', err);
+}
+
+
+
 
       document.getElementById("about-approach-title").textContent =
         about.ApproachTitle;
@@ -1061,6 +1103,115 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
 });
 
 </script>
+
+
+<style>
+  .education-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border:1px solid #6c63ff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .education-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6c63ff, #8c8bff);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.8rem;
+  box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.education-card:hover .education-icon {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #5a52e8, #7a77ff);
+}
+
+  /* Make all columns flex to equalize card height */
+  #education-container > div {
+    display: flex;
+  }
+
+  .education-duration {
+    color: #5a52e8 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+</style>
+
+<!-- Education Section -->
+<section id="education" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Education</h2>
+      <div class="mx-auto mb-3" style="width:60px; height:3px; background:#6c63ff;"></div>
+      <p id="education-description" class="text-muted"></p>
+    </div>
+
+    <div id="education-container" class="row g-4 justify-content-center">
+      <!-- Cards get injected here -->
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const url = `${window.GAS_BASE_URL}?type=education`;
+    const container = document.getElementById("education-container");
+    const desc = document.getElementById("education-description");
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.description) {
+          desc.textContent = data.description;
+        }
+        if (Array.isArray(data.education)) {
+          data.education.forEach(item => {
+            const col = document.createElement('div');
+            col.className = "col-12 col-sm-6 col-md-4";
+            col.innerHTML = `
+              <div class="education-card">
+                <div class="education-icon">
+  <i class="bi bi-mortarboard"></i>
+</div>
+
+                <h5 class="mb-1">${item.Degree}</h5>
+                <p class="mb-0 text-muted">${item.Institution}</p>
+                <small class="education-duration">
+  ${item.Duration}
+</small>
+
+                <p class="mt-2 text-muted">${item.Description}</p>
+              </div>
+            `;
+            container.appendChild(col);
+          });
+        }
+      })
+      .catch(err => {
+        container.innerHTML = `<p class="text-danger">Failed to load education data.</p>`;
+        console.error(err);
+      });
+  });
+</script>
+
+
+
+
 
 
 
@@ -1193,6 +1344,110 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
 
 
 
+<section id="languages" class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">Languages</h2>
+      <div class="mx-auto mb-3" style="width:60px; height:3px; background:#6c63ff;"></div>
+      <p id="languages-description" class="mx-auto" style="max-width: 800px; margin-bottom: 50px;"></p>
+    </div>
+
+    <div id="languages-container" class="row g-4" style="display: none;"></div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const url = `${window.GAS_BASE_URL}?type=languages`;
+
+    const descriptionEl = document.getElementById("languages-description");
+    const languagesContainer = document.getElementById("languages-container");
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.description) {
+          descriptionEl.textContent = data.description;
+        }
+
+        if (Array.isArray(data.languages)) {
+          data.languages.forEach((language) => {
+            const languageHTML = `
+              <div class="col-md-6">
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between">
+                    <span>${language.Name}</span>
+                    <span>${language.Percentage}%</span>
+                  </div>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-primary"
+                      role="progressbar"
+                      style="width: 0%;"
+                      data-target="${language.Percentage}"
+                      aria-valuenow="0"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            `;
+            languagesContainer.insertAdjacentHTML("beforeend", languageHTML);
+          });
+
+          languagesContainer.style.display = "";
+          animateOnScroll();
+        }
+      })
+      .catch((err) => {
+        languagesContainer.innerHTML = `<p class="text-danger">Failed to load languages.</p>`;
+        languagesContainer.style.display = "";
+        console.error("Error:", err);
+      });
+
+      function animateOnScroll() {
+  const section = document.getElementById("languages");
+  // Select ONLY bars inside this section
+  const bars = section.querySelectorAll(".progress-bar[data-target]");
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        bars.forEach((bar) => {
+          const target = +bar.getAttribute("data-target");
+          animateBar(bar, target, 1000);
+        });
+        obs.unobserve(section);
+      }
+    });
+  }, { threshold: 0.25 });
+
+  observer.observe(section);
+}
+
+
+    function animateBar(bar, target, duration) {
+      let start = null;
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        bar.style.width = `${progress * target}%`;
+        bar.setAttribute("aria-valuenow", Math.floor(progress * target));
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+  });
+</script>
+
+
+
+
+
+
 <section id="portfolio" class="py-5">
   <div class="container">
     <div class="text-center mb-4">
@@ -1229,7 +1484,7 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
         this.style.transform = 'translateY(0)';
       "
     >
-      See All Projects Page
+      Visit All Projects
     </a>
     
     </div>
@@ -1238,6 +1493,31 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
 
 
 
+<script>
+  (function() {
+    // 1) Your same Apps Script “exec” endpoint:
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDodKXTRdgaKbEmFGr23U9GyRyzBBY3pMLw9wZQDq9ZBSrCM3q-aaX7nVcEsraXW4EpA/exec';
+
+    // 2) Ask the backend if maintenance is on
+    fetch(`${SCRIPT_URL}?type=maintenance`)
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(data => {
+        // 3) If maintenance is “yes”, redirect away
+        if (data.maintenance === 'yes') {
+          // replace current history entry so “Back” doesn’t go right back here
+          window.location.replace('maintenance.html');
+        }
+      })
+      .catch(err => {
+        console.error('Maintenance check failed:', err);
+        // optional: you could still redirect on error
+        // window.location.replace('maintenance.html');
+      });
+  })();
+</script>
 
 
 <!-- Portfolio Modals Container -->
@@ -1446,7 +1726,7 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-danger"
                       onclick="${svc.Hash
-                        ? `window.open('http://127.0.0.1:5500/Gallery.html#${svc.Hash}', '_blank')`
+                        ? `window.open('http://127.0.0.1:5500/grid.html#${svc.Hash}', '_blank')`
                         : `alert('No anchor available')`}"
                       ${!svc.Hash ? "disabled" : ""}>
                       Learn More
@@ -1670,37 +1950,32 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
       <div class="row g-0 align-items-center">
         <!-- Contact Info Column -->
         <div class="col-md-5 mb-4 mb-md-0">
-          <h4 style="color: #6c63ff; font-weight: bold;">
-            <i class="bi bi-geo-alt-fill"></i> Our Address
-          </h4>
-          <p>123 Street Name, City, Country</p>
-          
-          <h4 style="color: #6c63ff; font-weight: bold;">
-            <i class="bi bi-telephone-fill"></i> Phone
-          </h4>
-          <p>+123 456 7890</p>
-          
-          <h4 style="color: #6c63ff; font-weight: bold;">
-            <i class="bi bi-envelope-fill"></i> Email
-          </h4>
-          <p>info@example.com</p>
-          
+         <!-- Address -->
+<h4 style="color: #6c63ff; font-weight: bold;">
+  <i class="bi bi-geo-alt-fill"></i> Our Address
+</h4>
+<p id="contact-address">Loading...</p>
 
-          <h4 style="color: #6c63ff; font-weight: bold;">Follow Us</h4>
-          <div class="d-flex gap-3">
-            <a href="#" class="text-decoration-none">
-              <i class="bi-facebook fs-2 social-icon"></i>
-            </a>
-            <a href="#" class="text-decoration-none">
-              <i class="bi-twitter fs-2 social-icon"></i>
-            </a>
-            <a href="#" class="text-decoration-none">
-              <i class="bi-instagram fs-2 social-icon"></i>
-            </a>
-            <a href="#" class="text-decoration-none">
-              <i class="bi-linkedin fs-2 social-icon"></i>
-            </a>
-          </div>
+<!-- Phone -->
+<h4 style="color: #6c63ff; font-weight: bold;">
+  <i class="bi bi-telephone-fill"></i> Phone
+</h4>
+<p id="contact-phone">Loading...</p>
+
+<!-- Email -->
+<h4 style="color: #6c63ff; font-weight: bold;">
+  <i class="bi bi-envelope-fill"></i> Email
+</h4>
+<a href="#" id="about-email-link">
+  <span id="about-email-text"></span>
+</a>
+<p id="contact-email">Loading...</p>
+
+<!-- Follow Us -->
+<h4 style="color: #6c63ff; font-weight: bold;">Follow Us</h4>
+<div class="d-flex gap-3" id="contact-socials">
+  <!-- Populated dynamically -->
+</div>
         </div>
 
         <!-- Form Column -->
@@ -1818,6 +2093,36 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
           });
       });
     </script>
+
+<script>
+  async function loadContactData() {
+    try {
+      const res = await fetch(`${window.GAS_BASE_URL}?type=contact`);
+      const { contactInfo, socials } = await res.json();
+
+      
+      
+      
+
+      // Inject Social Icons
+      const socialContainer = document.querySelector('#contact-socials');
+      socialContainer.innerHTML = ''; // Clear existing
+      socials.forEach(s => {
+        const a = document.createElement('a');
+        a.href = s.url;
+        a.className = 'text-decoration-none';
+        a.innerHTML = `<i class="${s.icon} fs-2 social-icon"></i>`;
+        socialContainer.appendChild(a);
+      });
+
+    } catch (error) {
+      console.error('Failed to load contact data:', error);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadContactData);
+</script>
+
     
       <!-- Bootstrap JS (Optional) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -1827,7 +2132,8 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
 
     <!-- Footer -->
     <footer class="text-center py-4">
-      <p class="mb-0">&copy; 2025 Graphic Designer. All Rights Reserved.</p>
+      Developed by <a href="https://linktr.ee/ahmiiraj123" target="_blank" rel="noopener noreferrer">Ahmar Manzoor</a>. All rights reserved. &copy; 2025
+
     </footer>
   </div></div>
 
@@ -1918,8 +2224,26 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
               preloaderEl.remove();
               contentWrapper.style.display = "block";
               contentWrapper.classList.add("fade-in");
+
+            // ── ONE-TIME scroll to hash (then remove it so you can scroll freely thereafter)
+          if (window.location.hash) { 
+            const hash = window.location.hash; 
+            const targetEl = document.querySelector(hash); 
+            if (targetEl) { 
+              setTimeout(() => { 
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+                // remove the hash so it won't "stick" on that section 
+                history.replaceState( 
+                  null, 
+                  document.title, 
+                  window.location.pathname + window.location.search 
+                ); 
+              }, 100); 
+            } 
+          }
             }, 300);
           }, 300);
+
         }
       });
     }
@@ -2009,6 +2333,7 @@ if (data.HeroImage && data.HeroImage.toString().trim()) {
     duration: 800, // Animation duration in ms
     once: true     // Whether animation should happen only once
   });
+  
 </script>
 
 
