@@ -557,6 +557,34 @@ href="https://unpkg.com/aos@2.3.1/dist/aos.css"
       from { opacity: 0; }
       to   { opacity: 1; }
     }
+
+
+
+
+    .button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.styled-button {
+  background: linear-gradient(135deg, #00e0ff, #0077ff);
+  color: white;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0, 224, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.styled-button:hover {
+  background: linear-gradient(135deg, #0077ff, #00e0ff);
+  box-shadow: 0 8px 20px rgba(0, 224, 255, 0.6);
+  transform: translateY(-2px);
+}
   </style>
 </head>
 <body>
@@ -702,6 +730,12 @@ href="https://unpkg.com/aos@2.3.1/dist/aos.css"
       <div class="social-icons" id="social-container">
         <!-- JS will inject <a><i>…</i></a> here -->
       </div>
+
+      <div class="button-wrapper">
+  <a href="movie.html" class="styled-button">🎬 Watch Full Movie</a>
+</div>
+
+      
       <div class="no-social" id="no-social-msg" style="display: none;">
         No social links to display.
       </div>
